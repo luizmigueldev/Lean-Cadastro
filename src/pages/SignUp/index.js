@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import InputMask from "react-input-mask"
 
 import { EntryPage, Banner, ContainerButton } from './style';
 import Button from '../../components/Button'
@@ -30,48 +31,62 @@ export default function SignUp() {
     cadastro.push(cad)
     localStorage.setItem("cadastro", JSON.stringify(cadastro));
   };
-  
-  //Esta função será acionada quando for submetido os dados do formulario para cadastro
-  function handleSignUp(e) {
-    e.preventDefault();
-    const cad = { nome, email, cpf, telefone };
-    cadastrando(cad);
-    setNome("");
-    setEmail("");
-    setCpf("");
-    setTelefone("");
-  };
 
-  //Aplica a formartação do numero do CPF, o input é alterado
-  useEffect(() => {
-    setCpf(formatedCpf(cpf));
-  }, [cpf]);
+  //Esta função fará a verificação de peenchimento do formulario
+  function validaCampos({ nome = "", email = "", cpf = "", telefone = "" }) {
+    let mensagem = "";
+    if (!nome) mensagem += "Nome Obrigatorio \n"
+    if (!email) mensagem += "E-mail Obrigatorio \n"
+    if (!cpf) {
+      mensagem += "CPF Obrigatorio \n"
+    } else {
+      !validaCpf(cpf) && (mensagem += "CPF Invalido \n")
+    }
+    if (!telefone) mensagem += "Telefone Obrigatorio \n"
 
-  //Aplica a formartação do numero do telefon, o input é alterado
-  useEffect(() => {
-    setTelefone(formatedCel(telefone));
-  }, [telefone]);
-
-  //função para a formatação do CPF
-  function formatedCpf(cpf) {
-    //retira os caracteres indesejados...
-    let formatedCpf = cpf.replace(/[^\d]/g, "");
-    //realizar a formatação...
-    return formatedCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    return mensagem;
   }
 
-  //função para a formatação do telefone
-  function formatedCel(telefone) {
-    //retira os caracteres indesejados...
-    let formatedCel = telefone.replace(/[^\d]/g, "");
-    //realizar a formatação...
-    return formatedCel.replace(/(\d{2})(\d{4,5})(\d{4})/, "($1) $2-$3");
+  //Esta função será acionada quando for submetido os dados do formulario para cadastro
+  //nesta função tambem é feita a chamada para validações de preenchimento do fomulario
+  function handleSignUp(e) {
+    e.preventDefault();
+
+    const cad = { nome, email, cpf, telefone };
+    const mensagem = validaCampos(cad);
+    if (!mensagem) {
+      alert("Usuario cadastrado com sucesso!");
+      cadastrando(cad);
+      setNome("");
+      setEmail("");
+      setCpf("");
+      setTelefone("");
+    } else {
+      alert(mensagem);
+    }
+  };
+
+  //função que fará a validação do CPF
+  function validaCpf(cpf) {
+    cpf = cpf.replace(/\D/g, '');
+    if (cpf.toString().length != 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+    var result = true;
+    [9, 10].forEach(function (j) {
+      var soma = 0, r;
+      cpf.split(/(?=)/).splice(0, j).forEach(function (e, i) {
+        soma += parseInt(e) * ((j + 2) - (i + 1));
+      });
+      r = soma % 11;
+      r = (r < 2) ? 0 : 11 - r;
+      if (r != cpf.substring(j, j + 1)) result = false;
+    });
+    return result;
   }
 
   return (
-    <EntryPage>
-      <Banner><img src={Img} /></Banner>
-      <EntryCard>
+    <EntryPage >
+      <Banner ><img src={Img} /></Banner>
+      <EntryCard class="entryCard">
         <h2>Lean Cadastro</h2>
         <form onSubmit={handleSignUp}>
           <InputGroup>
@@ -84,13 +99,12 @@ export default function SignUp() {
           </InputGroup>
           <InputGroup>
             <label htmlFor="cpf">CPF</label>
-            <Input type="text" id="cpf" maxlength="14" value={cpf} onChange={e => setCpf(e.target.value)} />
+            <InputMask class="inputMask" mask="999.999.999-99" type="text" id="cpf" value={cpf} onChange={e => setCpf(e.target.value)} />
           </InputGroup>
           <InputGroup>
             <label htmlFor="telefone">Telefone</label>
-            <Input type="tel" id="telefone" value={telefone} onChange={e => setTelefone(e.target.value)} />
+            <InputMask class="inputMask" mask="(99) 99999-9999" type="text" id="telefone" value={telefone} onChange={e => setTelefone(e.target.value)} />
           </InputGroup>
-
           <ContainerButton>
             <Button full={true} >Cadastrar</Button>
             <Link to="/List" class="link" >Login →</Link>

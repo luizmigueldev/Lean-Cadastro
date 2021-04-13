@@ -1,6 +1,6 @@
 # Projeto - Lean Cadastro
 
-Este projeto possibilitará o cadastro e armazanamento das informações no localStorage. Atraves de uma segunda tela possibilitará listagem e exclusão dos dados.
+Este projeto possibilitará o cadastro e armazanamento das informações no localStorage. Através de uma segunda tela possibilitará a listagem e exclusão dos dados.
 
 ## Executando o projeto
 
@@ -26,7 +26,7 @@ Esses comandos são utilizados para executar o projeto.
 
 ## Tela de Cadastro
 
-Está tela possibilitará atraves do preenchimento do formulário de cadastro.
+Esta tela possibilitará atraves do preenchimento do formulário de cadastro.
 O armazenamento das informações será feito apos o clique no botão cadastrar. 
 Atraves do clique no link login, será direcionado para a tela de listagem de dados
 [http://localhost:3000](http://localhost:3000)
